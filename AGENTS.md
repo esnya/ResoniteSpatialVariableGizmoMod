@@ -10,6 +10,13 @@
 6. **Data model constraints:** Template examples must stick to existing FrooxEngine data-model constructs; do not introduce new sync types or delegates in boilerplate code. Mods must not create DataModel objects (e.g., `Component`, `SyncRef`, `SyncDelegate`); operate only on instances the engine already owns.
 7. **Design notes ban:** Avoid ad-hoc design docs. Keep intent obvious in code, commits, and this file.
 
+## Functional Requirements (hidden from README)
+
+- Patch `WorkerInspector.BuildUIForComponent` to append a **Visualize** button only for `BoxSpatialVariable*` and `SphereSpatialVariable*` inspectors.
+- Visualization must reuse `Debug.Box` / `Debug.Sphere` with the same transform inputs used by spatial-variable sampling; do not add persistent gizmos.
+- The button disables after first press and drives per-frame debug draws until the inspector UI is destroyed.
+- BlendDistance visualization is intentionally out of scope.
+
 ## Task Completion Ritual
 
 Before calling any change “done,” run and fix the following in order (pass `-p:ResonitePath=...` if auto-detect fails):
