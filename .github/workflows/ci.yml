@@ -115,16 +115,16 @@ jobs:
           set -euo pipefail
           artifacts_dir=release-artifacts
           mkdir -p "$artifacts_dir"
-          cp EsnyaResoniteModTemplate/bin/Release/net9.0/EsnyaResoniteModTemplate.dll "$artifacts_dir/EsnyaResoniteModTemplate.dll"
-          if [ -f EsnyaResoniteModTemplate/bin/Release/net9.0/EsnyaResoniteModTemplate.pdb ]; then
-            cp EsnyaResoniteModTemplate/bin/Release/net9.0/EsnyaResoniteModTemplate.pdb "$artifacts_dir/EsnyaResoniteModTemplate.pdb"
+          cp SpatialVariableGizmo/bin/Release/SpatialVariableGizmo.dll "$artifacts_dir/SpatialVariableGizmo.dll"
+          if [ -f SpatialVariableGizmo/bin/Release/SpatialVariableGizmo.pdb ]; then
+            cp SpatialVariableGizmo/bin/Release/SpatialVariableGizmo.pdb "$artifacts_dir/SpatialVariableGizmo.pdb"
           fi
 
       - name: Upload release artifacts
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
-          name: esnya-resonite-mod-template
+          name: spatial-variable-gizmo
           path: release-artifacts
           if-no-files-found: error
 
@@ -138,15 +138,15 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: esnya-resonite-mod-template
+          name: spatial-variable-gizmo
           path: release-artifacts
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: EsnyaResoniteModTemplate ${{ github.ref_name }}
+          name: Spatial Variable Gizmo ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            release-artifacts/EsnyaResoniteModTemplate.dll
-            release-artifacts/EsnyaResoniteModTemplate.pdb
+            release-artifacts/SpatialVariableGizmo.dll
+            release-artifacts/SpatialVariableGizmo.pdb
