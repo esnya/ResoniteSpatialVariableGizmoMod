@@ -1,7 +1,7 @@
 name: ci
 
 permissions:
-  contents: write
+  contents: read
 
 on:
   pull_request:
@@ -15,6 +15,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     env:
       RESONITE_INSTALL_DIR: ${{ github.workspace }}/Resonite
@@ -29,13 +30,6 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Setup Resonite environment
-        uses: resonite-modding-group/setup-resonite-env-action@v0.1.0
-        with:
-          steam-user: ${{ secrets.STEAMUSER }}
-          steam-password: ${{ secrets.STEAMPASS }}
-          resonite-path: ${{ env.RESONITE_INSTALL_DIR }}
-
       - name: Prepare fallback references
         shell: bash
         run: |
@@ -48,6 +42,13 @@ jobs:
 
       - name: Restore
         run: dotnet restore ./ResoniteSpatialVariableGizmoMod.sln -p:ResonitePath="${{ env.RESONITE_INSTALL_DIR }}/"
+
+      - name: Verify formatting
+        shell: bash
+        run: |
+          dotnet format whitespace ./ResoniteSpatialVariableGizmoMod.sln --verify-no-changes --no-restore
+          dotnet format style ./ResoniteSpatialVariableGizmoMod.sln --verify-no-changes --no-restore --severity info
+          dotnet format analyzers ./ResoniteSpatialVariableGizmoMod.sln --verify-no-changes --no-restore --severity info
 
       - name: Build
         run: dotnet build ./ResoniteSpatialVariableGizmoMod.sln -c Release --no-restore -p:ResonitePath="${{ env.RESONITE_INSTALL_DIR }}/"
@@ -69,9 +70,23 @@ jobs:
         with:
           name: SpatialVariableGizmo
           path: artifacts/SpatialVariableGizmo.dll
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: SpatialVariableGizmo
+          path: artifacts
 
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" ./artifacts/SpatialVariableGizmo.dll --verify-tag --generate-notes
+        run: gh release create "${{ github.ref_name }}" ./artifacts/SpatialVariableGizmo.dll --repo "${{ github.repository }}" --verify-tag --generate-notes

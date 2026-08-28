@@ -149,7 +149,13 @@ internal static class SpatialVariableVisualizer
         float3 globalSize = slot.LocalScaleToGlobal(size);
         float3 center = slot.LocalPointToGlobal(float3.Zero);
         floatQ rotation = slot.GlobalRotation;
-        component.Debug.Box(in center, in globalSize, in VisualizationColor, in rotation);
+        component.Debug.Box(
+            in center,
+            in globalSize,
+            in VisualizationColor,
+            in rotation,
+            duration: 0f,
+            local: false);
     }
 
     private static void DrawSphere(Component component, float radius)
@@ -157,7 +163,13 @@ internal static class SpatialVariableVisualizer
         Slot slot = component.Slot;
         float scaledRadius = slot.LocalScaleToGlobal(radius);
         float3 center = slot.LocalPointToGlobal(float3.Zero);
-        component.Debug.Sphere(in center, scaledRadius, in VisualizationColor, 2);
+        component.Debug.Sphere(
+            in center,
+            scaledRadius,
+            in VisualizationColor,
+            2,
+            duration: 0f,
+            local: false);
     }
 
     private static bool TryReadRadius(Worker worker, out float radius)

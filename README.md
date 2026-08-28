@@ -12,10 +12,12 @@ Launch the button from any `BoxSpatialVariable*` or `SphereSpatialVariable*` ins
 
 ## Build & Hot Reload
 
-1. Install the .NET 9 SDK.
+1. Install the .NET 10 SDK.
 2. `dotnet build ResoniteSpatialVariableGizmoMod.sln` auto-detects a Resonite install next to this repo, then the default Steam Windows path, then the default Steam Linux path. If the game lives elsewhere, pass `-p:ResonitePath="/absolute/path/to/Resonite"` so the build can find the Resonite assemblies.
 3. Set `CopyToMods=true` when invoking `dotnet build` to copy the compiled DLL into `$(ResonitePath)/rml_mods` after each build.
 4. Drop [ResoniteHotReloadLib](https://github.com/Nytra/ResoniteHotReloadLib) into `$(ResonitePath)/rml_libs` and build with `-p:EnableResoniteHotReloadLib=true` if you want **Hot Reload Mods** to reload this mod without restarting Resonite. Leave the property unset on machines without the DLL.
+
+CI compiles against a pinned current `Resonite.GameLibs` package and downloads only the ResoniteModLoader build dependencies, so tagged builds do not require Steam credentials.
 
 ## Versioning
 

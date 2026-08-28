@@ -60,8 +60,10 @@
     <ResoniteModsDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'rml_mods'))</ResoniteModsDir>
     <ResoniteHotReloadModsDir>$([System.IO.Path]::Combine('$(ResoniteModsDir)', 'HotReloadMods'))</ResoniteHotReloadModsDir>
     <ResoniteFrooxEngineDll>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'FrooxEngine.dll'))</ResoniteFrooxEngineDll>
+    <FrooxEnginePresent Condition="Exists('$(ResoniteFrooxEngineDll)')">true</FrooxEnginePresent>
+    <FrooxEnginePresent Condition="'$(FrooxEnginePresent)'==''">false</FrooxEnginePresent>
   </PropertyGroup>
-  <ItemGroup Condition="'$(IsTestProject)'!='true'">
+  <ItemGroup Condition="'$(IsTestProject)'!='true' and '$(FrooxEnginePresent)'=='true'">
     <Reference Include="ResoniteModLoader">
       <HintPath>$([System.IO.Path]::Combine('$(ResoniteLibrariesDir)', 'ResoniteModLoader.dll'))</HintPath>
       <Private>false</Private>
@@ -83,8 +85,29 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup Condition="'$(IsTestProject)'!='true' and '$(FrooxEnginePresent)'!='true'">
+    <Reference Include="ResoniteModLoader">
+      <HintPath>$([System.IO.Path]::Combine('$(ResoniteLibrariesDir)', 'ResoniteModLoader.dll'))</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="HarmonyLib">
+      <HintPath>$([System.IO.Path]::Combine('$(ResoniteLibsDir)', '0Harmony.dll'))</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ResoniteHotReloadLib" Condition="'$(EnableResoniteHotReloadLib)'=='true'">
+      <HintPath>$([System.IO.Path]::Combine('$(ResoniteLibsDir)', 'ResoniteHotReloadLib.dll'))</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all" />
+    <PackageReference Include="Resonite.GameLibs" GeneratePathProperty="true" Condition="'$(FrooxEnginePresent)'!='true'" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsTestProject)'=='true' and '$(FrooxEnginePresent)'!='true'">
+    <ContentWithTargetPath Include="$(PkgResonite_GameLibs)\ref\$(TargetFramework)\*.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory).github\**\*" LinkBase=".github" />
