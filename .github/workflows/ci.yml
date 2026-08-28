@@ -56,6 +56,17 @@ jobs:
       - name: Test
         run: dotnet test ./ResoniteSpatialVariableGizmoMod.sln -c Release --no-build -p:ResonitePath="${{ env.RESONITE_INSTALL_DIR }}/"
 
+      - name: Verify release version
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $expected = $env:GITHUB_REF_NAME.TrimStart('v')
+          $assemblyPath = Resolve-Path 'SpatialVariableGizmo/bin/Release/SpatialVariableGizmo.dll'
+          $actual = [System.Reflection.AssemblyName]::GetAssemblyName($assemblyPath).Version.ToString(3)
+          if ($actual -ne $expected) {
+            throw "Release tag $expected does not match assembly version $actual."
+          }
+
       - name: Pack artifact
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
