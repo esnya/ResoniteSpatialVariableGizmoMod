@@ -5,8 +5,16 @@
       Text="ResonitePath must be set (install Resonite next to the repo or pass -p:ResonitePath=/absolute/path/to/Resonite)."
     />
     <Error
-      Condition="!Exists('$(ResoniteFrooxEngineDll)')"
+      Condition="'$(FrooxEnginePresent)'=='true' and !Exists('$(ResoniteFrooxEngineDll)')"
       Text="Cannot find FrooxEngine.dll under $(ResolvedResonitePath)."
+    />
+    <Error
+      Condition="'$(IsTestProject)'!='true' and '$(FrooxEnginePresent)'!='true' and !Exists('$(ResoniteLibrariesDir)\ResoniteModLoader.dll')"
+      Text="Cannot resolve ResoniteModLoader.dll. Install Resonite locally or place it under $(ResoniteLibrariesDir)."
+    />
+    <Error
+      Condition="'$(IsTestProject)'!='true' and '$(FrooxEnginePresent)'!='true' and !Exists('$(ResoniteLibsDir)\0Harmony.dll')"
+      Text="Cannot resolve 0Harmony.dll. Install Resonite locally or place it under $(ResoniteLibsDir)."
     />
   </Target>
   <Target
